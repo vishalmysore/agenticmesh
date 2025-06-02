@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Keep the existing head content and styles -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JVM Manufacturing Agentic Mesh</title>
+    <style>
+        /* Copy all existing styles here */
+    </style>
+</head>
+<body>
+    <!-- Keep all the existing HTML structure -->
+    <script>
+        // Define agentDescriptions first
+        const agentDescriptions = {
+            'Raw Materials Agent': {
+                description: 'Manages raw material inventory, procurement, and quality verification. Coordinates with suppliers and ensures optimal stock levels.',
+                protocols: ['A2A', 'MCP'],
+                operations: '120-150',
+                efficiency: '94-98',
+                connections: '3-5'
+            },
+            // ... other agent descriptions
+        };
+
+        // Define agentDemos correctly
+        const agentDemos = {
+            'Raw Materials Agent': {
+                title: 'Raw Materials Agent',
+                description: 'Handles raw material procurement and stock validation using A2A and MCP.',
+                code: `@Component
+class RawMaterialsAgent {
+    @A2AFunction
+    fun checkInventoryLevels() { /* logic */ }
+
+    @MCPFunction
+    fun requestMaterials() { /* logic */ }
+}`,
+                interactions: [
+                    { from: 'raw-materials', to: 'mongodb', message: 'Store inventory data' },
+                    { from: 'raw-materials', to: 'kafka', message: 'Publish updates' }
+                ]
+            },
+            'Quality Inspection Agent': {
+                title: 'Quality Inspection Agent',
+                description: 'Inspects materials and ensures compliance before production.',
+                code: `@Component
+public class QualityInspectionAgent {
+    @A2AFunction
+    public void inspectMaterials() { /* logic */ }
+
+    @MCPFunction
+    public void logResults() { /* logic */ }
+}`,
+                interactions: [
+                    { from: 'quality-inspection', to: 'production-planning', message: 'Inspection result' },
+                    { from: 'quality-inspection', to: 'raw-materials', message: 'Quality check' }
+                ]
+            },
+            // ... add other agent demos here
+        };
+
+        // Define helper functions
+        function showFlow(fromId, toId) {
+            const from = document.getElementById(fromId);
+            const to = document.getElementById(toId);
+            if (!from || !to) return;
+
+            const fromRect = from.getBoundingClientRect();
+            const toRect = to.getBoundingClientRect();
+
+            const x1 = fromRect.left + fromRect.width / 2;
+            const y1 = fromRect.top + fromRect.height / 2;
+            const x2 = toRect.left + toRect.width / 2;
+            const y2 = toRect.top + toRect.height / 2;
+
+            const length = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+            const angle = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
+
+            const container = document.querySelector('.mesh-container');
+
+            const flowLine = document.createElement('div');
+            flowLine.className = 'message-flow';
+            flowLine.style.width = `${length}px`;
+            flowLine.style.left = `${x1}px`;
+            flowLine.style.top = `${y1}px`;
+            flowLine.style.transform = `rotate(${angle}deg)`;
+            container.appendChild(flowLine);
+
+            animateFlowParticles(flowLine, length);
+        }
+
+        // Add event listeners
+        document.querySelectorAll('.manufacturing-agent').forEach(agent => {
+            agent.addEventListener('click', function() {
+                const agentName = this.getAttribute('data-name');
+                const demo = agentDemos[agentName];
+
+                document.querySelectorAll('.manufacturing-agent').forEach(a => a.classList.remove('selected'));
+                this.classList.add('selected');
+
+                if (demo) {
+                    const demoModal = document.getElementById('agent-demo');
+                    const demoContent = document.getElementById('demo-details');
+
+                    demoContent.innerHTML = `
+                        <h3>${demo.title}</h3>
+                        <p>${demo.description}</p>
+                        <div class="demo-section">
+                            <h4>Implementation:</h4>
+                            <pre class="demo-code">${demo.code}</pre>
+                        </div>
+                    `;
+
+                    demoModal.classList.add('visible');
+                    removeConnections();
+
+                    demo.interactions.forEach(interaction => {
+                        showFlow(interaction.from, interaction.to);
+                    });
+                }
+            });
+
+            // ... other event listeners
+        });
+
+        // Initialize the rest of your code
+        // ... add remaining functions and initialization code
+    </script>
+</body>
+</html>

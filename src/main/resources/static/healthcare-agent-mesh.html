@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthcare Agentic Mesh Pipeline</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: radial-gradient(ellipse at center, #0a192f 0%, #020c1b 100%);
+            font-family: 'Monaco', 'Consolas', monospace;
+            min-height: 100vh;
+            color: #64ffda;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mesh-container {
+            width: 100%;
+            min-height: 100vh;
+            position: relative;
+            padding: 20px;
+        }
+
+        .grid-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(100, 255, 218, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(100, 255, 218, 0.1) 1px, transparent 1px);
+            background-size: 40px 40px;
+            animation: gridShift 30s linear infinite;
+            z-index: 1;
+        }
+
+        .title-section {
+            text-align: center;
+            margin-bottom: 30px;
+            z-index: 100;
+            position: relative;
+        }
+
+        .main-title {
+            font-size: 32px;
+            color: #64ffda;
+            text-shadow: 0 0 20px rgba(100, 255, 218, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #8892b0;
+            opacity: 0.9;
+        }
+
+        .healthcare-agent {
+            position: absolute;
+            width: 180px;
+            height: 120px;
+            background: rgba(10, 25, 47, 0.8);
+            border: 2px solid;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.4s;
+            backdrop-filter: blur(10px);
+            z-index: 10;
+        }
+
+        .healthcare-agent:hover {
+            transform: scale(1.1) translateY(-5px);
+            box-shadow: 0 8px 30px rgba(100, 255, 218, 0.3);
+        }
+
+        .agent-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .agent-title {
+            font-size: 14px;
+            text-align: center;
+            color: #64ffda;
+            font-weight: bold;
+        }
+
+        .agent-lang {
+            margin-top: 5px;
+            padding: 2px 8px;
+            background: rgba(100, 255, 218, 0.1);
+            border-radius: 10px;
+            font-size: 12px;
+            color: #8892b0;
+        }
+
+        .info-panel {
+            position: fixed;
+            right: 20px;
+            top: 20px;
+            width: 300px;
+            background: rgba(10, 25, 47, 0.9);
+            border: 1px solid #64ffda;
+            border-radius: 10px;
+            padding: 20px;
+            color: #8892b0;
+            z-index: 100;
+            opacity: 0;
+            transform: translateX(50px);
+            transition: all 0.3s ease;
+        }
+
+        .info-panel.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .flow-line {
+            position: absolute;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                rgba(100, 255, 218, 0.2),
+                rgba(100, 255, 218, 0.8),
+                rgba(100, 255, 218, 0.2));
+            transform-origin: left center;
+            z-index: 5;
+        }
+
+        .flow-arrow {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 6px 0 6px 12px;
+            border-color: transparent transparent transparent #64ffda;
+        }
+
+        .message-bubble {
+            position: absolute;
+            background: rgba(10, 25, 47, 0.9);
+            border: 1px solid #64ffda;
+            border-radius: 8px;
+            padding: 8px;
+            font-size: 12px;
+            color: #64ffda;
+            z-index: 20;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .message-bubble.visible {
+            opacity: 1;
+        }
+
+        .demo-modal {
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 800px;
+            background: rgba(10, 25, 47, 0.95);
+            border: 2px solid #64ffda;
+            border-radius: 15px;
+            padding: 20px;
+            display: none;
+            z-index: 1000;
+        }
+
+        .demo-modal.visible {
+            display: block;
+        }
+
+        .demo-code {
+            background: rgba(10, 25, 47, 0.5);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(100, 255, 218, 0.2);
+            font-family: 'Monaco', monospace;
+            font-size: 12px;
+            color: #64ffda;
+            margin: 10px 0;
+            white-space: pre;
+        }
+
+        .agent-status {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: statusPulse 2s infinite;
+        }
+
+        .protocol-badge {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 10px;
+            background: rgba(100, 255, 218, 0.1);
+            color: #64ffda;
+        }
+
+        @keyframes statusPulse {
+            0% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+            100% { opacity: 0.5; transform: scale(1); }
+        }
+        
+        /* Agent Positions */
+        #patient-intake { top: 20%; left: 10%; border-color: #ff7e67; }
+        #diagnostic { top: 20%; left: 30%; border-color: #00b4d8; }
+        #treatment { top: 20%; left: 50%; border-color: #64ffda; }
+        #monitoring { top: 20%; left: 70%; border-color: #ffd60a; }
+        #pharmacy { top: 50%; left: 20%; border-color: #fb5607; }
+        #lab-results { top: 50%; left: 40%; border-color: #ff006e; }
+        #specialist { top: 50%; left: 60%; border-color: #8338ec; }
+    </style>
+</head>
+<body>
+    <div class="mesh-container">
+        <div class="grid-background"></div>
+
+        <div class="title-section">
+            <div class="main-title">Healthcare Agentic Mesh Pipeline</div>
+            <div class="subtitle">Multi-Language Agent Collaboration in Healthcare</div>
+        </div>
+
+        <!-- Healthcare Agents -->
+        <div class="healthcare-agent" id="patient-intake" data-name="Patient Intake">
+            <div class="agent-status" style="background: #64ffda;"></div>
+            <div class="agent-icon">👤</div>
+            <div class="agent-title">PATIENT INTAKE</div>
+            <div class="agent-lang">KOTLIN</div>
+            <div class="protocol-badge">A2A</div>
+        </div>
+
+        <div class="healthcare-agent" id="diagnostic" data-name="Diagnostic">
+            <div class="agent-status" style="background: #64ffda;"></div>
+            <div class="agent-icon">🔍</div>
+            <div class="agent-title">DIAGNOSTIC AGENT</div>
+            <div class="agent-lang">SCALA</div>
+            <div class="protocol-badge">MCP</div>
+        </div>
+
+        <div class="healthcare-agent" id="treatment" data-name="Treatment">
+            <div class="agent-status" style="background: #64ffda;"></div>
+            <div class="agent-icon">💊</div>
+            <div class="agent-title">TREATMENT PLANNING</div>
+            <div class="agent-lang">JAVA</div>
+            <div class="protocol-badge">A2A</div>
+        </div>
+
+        <div class="healthcare-agent" id="monitoring" data-name="Monitoring">
+            <div class="agent-status" style="background: #64ffda;"></div>
+            <div class="agent-icon">📊</div>
+            <div class="agent-title">PATIENT MONITORING</div>
+            <div class="agent-lang">KOTLIN</div>
+            <div class="protocol-badge">MCP</div>
+        </div>
+
+        <div class="healthcare-agent" id="pharmacy" data-name="Pharmacy">
+            <div class="agent-status" style="background: #64ffda;"></div>
+            <div class="agent-icon">💉</div>
+            <div class="agent-title">PHARMACY SYSTEM</div>
+            <div class="agent-lang">JAVA</div>
+            <div class="protocol-badge">A2A</div>
+        </div>
+
+        <div class="healthcare-agent" id="lab-results" data-name="Lab Results">
+            <div class="agent-status" style="background: #64ffda;"></div>
+            <div class="agent-icon">🔬</div>
+            <div class="agent-title">LAB RESULTS</div>
+            <div class="agent-lang">GROOVY</div>
+            <div class="protocol-badge">MCP</div>
+        </div>
+
+        <div class="healthcare-agent" id="specialist" data-name="Specialist">
+            <div class="agent-status" style="background: #64ffda;"></div>
+            <div class="agent-icon">👨‍⚕️</div>
+            <div class="agent-title">SPECIALIST REFERRAL</div>
+            <div class="agent-lang">SCALA</div>
+            <div class="protocol-badge">A2A</div>
+        </div>
+
+        <div class="info-panel">
+            <h3>Agent Information</h3>
+            <p class="agent-description"></p>
+            <pre class="demo-code"></pre>
+        </div>
+    </div>
+
+    <script>
+        const agentDescriptions = {
+            'Patient Intake': {
+                description: 'Handles patient registration, medical history collection, and initial triage using Kotlin coroutines for async operations.',
+                code: `@Component
+class PatientIntakeAgent {
+    suspend fun processPatient(patient: Patient) = coroutineScope {
+        val history = async { fetchMedicalHistory(patient) }
+        val insurance = async { verifyInsurance(patient) }
+        val vitals = recordVitals(patient)
+        
+        PatientContext(
+            history.await(),
+            insurance.await(),
+            vitals
+        )
+    }`
+            },
+            'Diagnostic': {
+                description: 'Analyzes patient symptoms and medical history using Scala for complex pattern matching and ML-based diagnosis.',
+                code: `case class DiagnosticAgent(mlModel: DiagnosticModel) {
+    def analyzeSymptomsAndHistory(patient: Patient): DiagnosticResult = {
+        val predictions = mlModel.predict(patient.symptoms)
+        val condition = patient.history match {
+            case h if h.contains("diabetes") => adjustForDiabetic(predictions)
+            case h if h.contains("hypertension") => adjustForHypertensive(predictions)
+            case _ => predictions
+        }
+        DiagnosticResult(condition, confidence)
+    }`
+            },
+            'Treatment': {
+                description: 'Generates and manages treatment plans using Java for robust enterprise integration.',
+                code: `@Service
+public class TreatmentPlanningAgent {
+    @Autowired
+    private GuidelineService guidelines;
+    
+    public TreatmentPlan createPlan(Diagnosis diagnosis) {
+        return guidelines.stream()
+            .filter(g -> g.appliesTo(diagnosis))
+            .map(g -> g.generatePlan(diagnosis))
+            .findFirst()
+            .orElseThrow(() -> 
+                new NoGuidelineException(diagnosis));
+    }`
+            },
+            'Monitoring': {
+                description: 'Tracks patient vital signs and treatment progress using Kotlin for reactive streams.',
+                code: `class PatientMonitoringAgent {
+    private val vitalsFlow = MutableSharedFlow<VitalSigns>()
+    
+    suspend fun monitorPatient(patientId: String) {
+        vitalsFlow
+            .filter { it.patientId == patientId }
+            .collect { vitals ->
+                when {
+                    vitals.isAnomalous() -> alertMedicalStaff(vitals)
+                    vitals.needsAdjustment() -> adjustTreatment(vitals)
+                    else -> updatePatientRecord(vitals)
+                }
+            }
+    }`
+            },
+            'Pharmacy': {
+                description: 'Manages medication orders and interactions using Java for transaction safety.',
+                code: `@Transactional
+public class PharmacyAgent {
+    public void processOrder(MedicationOrder order) {
+        validateInteractions(order);
+        if (order.hasInteractions()) {
+            notifyPrescriber(order.getInteractions());
+            return;
+        }
+        dispatchMedication(order);
+        updateInventory(order);
+    }`
+            },
+            'Lab Results': {
+                description: 'Processes and analyzes laboratory results using Groovy for flexible data processing.',
+                code: `class LabResultsAgent {
+    def processResults(results) {
+        results.each { result ->
+            def analysis = analyzeResult(result)
+            if (analysis.isAbnormal()) {
+                notifyPhysician(result)
+                updatePatientRecord(result)
+            }
+            archiveResult(result)
+        }
+    }
+}`
+            },
+            'Specialist': {
+                description: 'Coordinates specialist referrals using Scala for complex scheduling logic.',
+                code: `object SpecialistReferralAgent {
+    def findOptimalSpecialist(
+        patientNeeds: PatientNeeds,
+        urgency: Urgency
+    ): Option[Appointment] = {
+        for {
+            specialists <- availableSpecialists
+            matched = specialists.filter(matchesNeeds(patientNeeds))
+            optimal <- selectOptimal(matched, urgency)
+            slot <- optimal.nextAvailable
+        } yield Appointment(optimal, slot)
+    }
+}`
+            }
+        };
+
+        // Pipeline flow configuration
+        const pipelineFlows = [
+            { from: 'patient-intake', to: 'diagnostic', message: 'Patient Data & History' },
+            { from: 'diagnostic', to: 'treatment', message: 'Diagnosis Results' },
+            { from: 'treatment', to: 'monitoring', message: 'Treatment Plan' },
+            { from: 'diagnostic', to: 'lab-results', message: 'Lab Orders' },
+            { from: 'lab-results', to: 'treatment', message: 'Lab Results' },
+            { from: 'treatment', to: 'pharmacy', message: 'Prescriptions' },
+            { from: 'treatment', to: 'specialist', message: 'Referrals' }
+        ];
+
+        function showFlow(fromId, toId, message) {
+            const from = document.getElementById(fromId);
+            const to = document.getElementById(toId);
+            if (!from || !to) return;
+
+            const fromRect = from.getBoundingClientRect();
+            const toRect = to.getBoundingClientRect();
+
+            const fromX = fromRect.left + fromRect.width/2;
+            const fromY = fromRect.top + fromRect.height/2;
+            const toX = toRect.left + toRect.width/2;
+            const toY = toRect.top + toRect.height/2;
+
+            const length = Math.sqrt((toX - fromX) ** 2 + (toY - fromY) ** 2);
+            const angle = Math.atan2(toY - fromY, toX - fromX) * (180 / Math.PI);
+
+            // Create flow line
+            const line = document.createElement('div');
+            line.className = 'flow-line';
+            line.style.width = `${length}px`;
+            line.style.left = `${fromX}px`;
+            line.style.top = `${fromY}px`;
+            line.style.transform = `rotate(${angle}deg)`;
+
+            // Create arrow
+            const arrow = document.createElement('div');
+            arrow.className = 'flow-arrow';
+            arrow.style.left = `${toX - 12}px`;
+            arrow.style.top = `${toY - 6}px`;
+
+            // Create message bubble
+            const bubble = document.createElement('div');
+            bubble.className = 'message-bubble';
+            bubble.textContent = message;
+            const midX = (fromX + toX) / 2;
+            const midY = (fromY + toY) / 2;
+            bubble.style.left = `${midX - 50}px`;
+            bubble.style.top = `${midY - 20}px`;
+
+            document.body.appendChild(line);
+            document.body.appendChild(arrow);
+            document.body.appendChild(bubble);
+
+            // Show message on hover
+            line.addEventListener('mouseenter', () => {
+                bubble.classList.add('visible');
+            });
+            line.addEventListener('mouseleave', () => {
+                bubble.classList.remove('visible');
+            });
+
+            return [line, arrow, bubble];
+        }
+
+        // Initialize agent interactions
+        document.querySelectorAll('.healthcare-agent').forEach(agent => {
+            agent.addEventListener('mouseenter', () => {
+                const agentName = agent.getAttribute('data-name');
+                const info = agentDescriptions[agentName];
+                if (!info) return;
+
+                const panel = document.querySelector('.info-panel');
+                panel.querySelector('.agent-description').textContent = info.description;
+                panel.querySelector('.demo-code').textContent = info.code;
+                panel.classList.add('visible');
+
+                // Show related flows
+                pipelineFlows.forEach(flow => {
+                    if (flow.from === agent.id || flow.to === agent.id) {
+                        showFlow(flow.from, flow.to, flow.message);
+                    }
+                });
+            });
+
+            agent.addEventListener('mouseleave', () => {
+                document.querySelector('.info-panel').classList.remove('visible');
+                document.querySelectorAll('.flow-line, .flow-arrow, .message-bubble').forEach(el => el.remove());
+            });
+        });
+    </script>
+</body>
+</html>

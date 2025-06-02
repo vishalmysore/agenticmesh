@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JVM Manufacturing Agentic Mesh</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: radial-gradient(ellipse at center, #0a192f 0%, #020c1b 100%);
+            font-family: 'Monaco', 'Consolas', monospace;
+            min-height: 100vh;
+            color: #64ffda;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mesh-container {
+            width: 100%;
+            min-height: 100vh;
+            position: relative;
+            padding: 20px;
+        }
+
+        .grid-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(100, 255, 218, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(100, 255, 218, 0.1) 1px, transparent 1px);
+            background-size: 40px 40px;
+            animation: gridShift 30s linear infinite;
+            z-index: 1;
+        }
+
+        @keyframes gridShift {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(40px, 40px); }
+        }
+
+        .title-section {
+            text-align: center;
+            margin-bottom: 30px;
+            z-index: 100;
+            position: relative;
+        }
+
+        .main-title {
+            font-size: 32px;
+            color: #64ffda;
+            text-shadow: 0 0 20px rgba(100, 255, 218, 0.5);
+            margin-bottom: 10px;
+            animation: titlePulse 3s ease-in-out infinite;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #8892b0;
+            opacity: 0.9;
+        }
+
+        @keyframes titlePulse {
+            0%, 100% { text-shadow: 0 0 20px rgba(100, 255, 218, 0.5); }
+            50% { text-shadow: 0 0 30px rgba(100, 255, 218, 0.8); }
+        }
+
+        .manufacturing-agent {
+            position: absolute;
+            width: 150px;
+            height: 110px;
+            border-radius: 15px;
+            background: rgba(10, 25, 47, 0.8);
+            backdrop-filter: blur(10px);
+            border: 2px solid;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 20px rgba(100, 255, 218, 0.2);
+            z-index: 10;
+        }
+
+        .manufacturing-agent:hover {
+            transform: scale(1.1) translateY(-5px);
+            box-shadow: 0 8px 30px rgba(100, 255, 218, 0.3);
+        }
+
+        .agent-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .agent-title {
+            font-size: 12px;
+            text-align: center;
+            color: #64ffda;
+            font-weight: bold;
+        }
+
+        .agent-lang {
+            margin-top: 5px;
+            padding: 2px 8px;
+            background: rgba(100, 255, 218, 0.1);
+            border-radius: 10px;
+            font-size: 10px;
+            color: #8892b0;
+        }
+
+        .agent-status {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: statusPulse 2s infinite;
+        }
+
+        @keyframes statusPulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .connection-line {
+            position: absolute;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                rgba(100, 255, 218, 0.1),
+                rgba(100, 255, 218, 0.4),
+                rgba(100, 255, 218, 0.1));
+            transform-origin: left center;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .data-particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #64ffda;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(100, 255, 218, 0.8);
+            pointer-events: none;
+        }
+
+        .info-panel {
+            position: fixed;
+            right: 20px;
+            top: 20px;
+            width: 300px;
+            background: rgba(10, 25, 47, 0.9);
+            border: 1px solid #64ffda;
+            border-radius: 10px;
+            padding: 20px;
+            color: #8892b0;
+            z-index: 100;
+            opacity: 0;
+            transform: translateX(50px);
+            transition: all 0.3s ease;
+        }
+
+        .info-panel.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .info-panel h3 {
+            color: #64ffda;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .info-panel p {
+            font-size: 12px;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .metric-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(100, 255, 218, 0.2);
+        }
+
+        .metric {
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 18px;
+            color: #64ffda;
+            font-weight: bold;
+        }
+
+        .metric-label {
+            font-size: 10px;
+            color: #8892b0;
+        }
+
+        .manufacturing-stage {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(10, 25, 47, 0.9);
+            border: 1px solid #64ffda;
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            gap: 20px;
+            z-index: 100;
+        }
+
+        .stage-step {
+            text-align: center;
+            opacity: 0.5;
+            transition: all 0.3s ease;
+        }
+
+        .stage-step.active {
+            opacity: 1;
+        }
+
+        .stage-icon {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .stage-label {
+            font-size: 10px;
+            color: #8892b0;
+        }
+
+        /* Agent Positions */
+        #raw-materials { top: 10%; left: 10%; border-color: #ff7e67; }
+        #quality-inspection { top: 10%; left: 30%; border-color: #00b4d8; }
+        #production-planning { top: 10%; left: 50%; border-color: #64ffda; }
+        #machine-control { top: 30%; left: 20%; border-color: #ffd60a; }
+        #assembly-line { top: 30%; left: 40%; border-color: #fb5607; }
+        #inventory-control { top: 30%; left: 60%; border-color: #ff006e; }
+        #maintenance { top: 50%; left: 10%; border-color: #8338ec; }
+        #quality-control { top: 50%; left: 30%; border-color: #06d6a0; }
+        #packaging { top: 50%; left: 50%; border-color: #118ab2; }
+        #shipping { top: 50%; left: 70%; border-color: #073b4c; }
+
+        .agent-demo {
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            height: 70%;
+            background: rgba(10, 25, 47, 0.95);
+            border: 2px solid #64ffda;
+            border-radius: 15px;
+            padding: 20px;
+            display: none;
+            z-index: 200;
+            backdrop-filter: blur(10px);
+        }
+
+        .agent-demo.visible {
+            display: block;
+            animation: demoFadeIn 0.3s ease-out;
+        }
+
+        @keyframes demoFadeIn {
+            from { opacity: 0; transform: translate(-50%, -48%); }
+            to { opacity: 1; transform: translate(-50%, -50%); }
+        }
+
+        .demo-close {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            color: #64ffda;
+            cursor: pointer;
+            font-size: 24px;
+        }
+
+        .demo-content {
+            height: 100%;
+            overflow-y: auto;
+            color: #8892b0;
+            padding: 20px;
+        }
+
+        .demo-title {
+            color: #64ffda;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .demo-section {
+            margin-bottom: 20px;
+        }
+
+        .demo-code {
+            background: rgba(10, 25, 47, 0.5);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(100, 255, 218, 0.2);
+            font-family: 'Monaco', monospace;
+            font-size: 12px;
+            color: #64ffda;
+            margin: 10px 0;
+            white-space: pre;
+        }
+
+        .message-flow {
+            position: absolute;
+            height: 4px;
+            background: linear-gradient(90deg, 
+                rgba(100, 255, 218, 0.2),
+                rgba(100, 255, 218, 0.8),
+                rgba(100, 255, 218, 0.2));
+            transform-origin: left center;
+            z-index: 6;
+            pointer-events: none;
+        }
+
+        .flow-particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #64ffda;
+            border-radius: 50%;
+            filter: blur(2px);
+            box-shadow: 0 0 15px rgba(100, 255, 218, 0.9);
+            pointer-events: none;
+        }
+
+        /* Protocol Badges */
+        .protocol-badges {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            display: flex;
+            gap: 4px;
+        }
+
+        .protocol-badge {
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 8px;
+            background: rgba(100, 255, 218, 0.1);
+        }
+
+        .a2a-badge { color: #ff6b6b; }
+        .mcp-badge { color: #4ecdc4; }
+    
+.manufacturing-agent.selected {
+    box-shadow: 0 0 20px #64ffda, 0 0 10px #64ffda inset;
+    transform: scale(1.05);
+}
+
+</style>
+</head>
+<body>
+    <div class="mesh-container">
+        <div class="grid-background"></div>
+
+        <div class="title-section">
+            <div class="main-title">Smart Manufacturing Agentic Mesh</div>
+            <div class="subtitle">Multi-Agent Manufacturing Process Automation</div>
+        </div>
+
+        <!-- Infrastructure Components -->
+        <div class="infrastructure-component" id="mongodb">
+            <div class="infra-icon">🗄️</div>
+            <div>MongoDB</div>
+            <div style="font-size: 10px; color: #8892b0;">Data Storage</div>
+        </div>
+
+        <div class="infrastructure-component" id="kafka">
+            <div class="infra-icon">📨</div>
+            <div>Kafka</div>
+            <div style="font-size: 10px; color: #8892b0;">Event Streaming</div>
+        </div>
+
+        <div class="infrastructure-component" id="spark">
+            <div class="infra-icon">⚡</div>
+            <div>Apache Spark</div>
+            <div style="font-size: 10px; color: #8892b0;">Data Processing</div>
+        </div>
+
+        <!-- Modified Manufacturing Agents with Protocol Badges -->
+        <div class="manufacturing-agent" id="raw-materials" data-name="Raw Materials Agent">
+            <div class="protocol-badges">
+                <span class="protocol-badge a2a-badge">A2A</span>
+                <span class="protocol-badge mcp-badge">MCP</span>
+            </div>
+            <div class="agent-status" style="background: #64ffda;"></div>
+            <div class="agent-icon">🏭</div>
+            <div class="agent-title">RAW MATERIALS</div>
+            <div class="agent-lang">KOTLIN</div>
+        </div>
+
+        <div class="manufacturing-agent" id="quality-inspection" data-name="Quality Inspection Agent">
+            <div class="agent-status" style="background: #64ffda;"></div>
+            <div class="agent-icon">🔍</div>
+            <div class="agent-title">QUALITY INSPECTION</div>
+            <div class="agent-lang">JAVA</div>
+        </div>
+
+        <div class="manufacturing-agent" id="production-planning" data-name="Production Planning Agent">
+            <div class="agent-status" style="background: #ffd60a;"></div>
+            <div class="agent-icon">📊</div>
+            <div class="agent-title">PRODUCTION PLANNING</div>
+            <div class="agent-lang">SCALA</div>
+        </div>        <div class="manufacturing-agent" id="machine-control" data-name="Machine Control Agent">
+            <div class="agent-status" style="background: #64ffda;"></div>
+            <div class="agent-icon">⚙️</div>
+            <div class="agent-title">MACHINE CONTROL</div>
+            <div class="agent-lang">JAVA</div>
+        </div>
+
+        <div class="manufacturing-agent" id="assembly-line" data-name="Assembly Line Agent">
+            <div class="agent-status" style="background: #64ffda;"></div>
+            <div class="agent-icon">🔧</div>
+            <div class="agent-title">ASSEMBLY LINE</div>
+            <div class="agent-lang">KOTLIN</div>
+        </div>
+
+        <div class="manufacturing-agent" id="inventory-control" data-name="Inventory Control Agent">
+            <div class="agent-status" style="background: #64ffda;"></div>
+            <div class="agent-icon">📦</div>
+            <div class="agent-title">INVENTORY CONTROL</div>
+            <div class="agent-lang">KOTLIN</div>
+        </div>        <div class="manufacturing-agent" id="maintenance" data-name="Predictive Maintenance Agent">
+            <div class="agent-status" style="background: #ff006e;"></div>
+            <div class="agent-icon">🔧</div>
+            <div class="agent-title">MAINTENANCE</div>
+            <div class="agent-lang">GROOVY</div>
+        </div>
+
+        <div class="manufacturing-agent" id="quality-control" data-name="Quality Control Agent">
+            <div class="agent-status" style="background: #64ffda;"></div>
+            <div class="agent-icon">✅</div>
+            <div class="agent-title">QUALITY CONTROL</div>
+            <div class="agent-lang">JAVA</div>
+        </div>
+
+        <div class="manufacturing-agent" id="packaging" data-name="Packaging Agent">
+            <div class="agent-status" style="background: #64ffda;"></div>
+            <div class="agent-icon">📦</div>
+            <div class="agent-title">PACKAGING</div>
+            <div class="agent-lang">KOTLIN</div>
+        </div>
+
+        <div class="manufacturing-agent" id="shipping" data-name="Shipping Agent">
+            <div class="agent-status" style="background: #64ffda;"></div>
+            <div class="agent-icon">🚚</div>
+            <div class="agent-title">SHIPPING</div>
+            <div class="agent-lang">SCALA</div>
+        </div>
+
+        <!-- Agent Demo Modal -->
+        <div class="agent-demo" id="agent-demo">
+            <div class="demo-close">×</div>
+            <div class="demo-content">
+                <h2 class="demo-title">Agent Demonstration</h2>
+                <div id="demo-details"></div>
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <h3>Agent Information</h3>
+            <p class="agent-description"></p>
+            <div class="metric-container">
+                <div class="metric">
+                    <div class="metric-value">0</div>
+                    <div class="metric-label">OPERATIONS/MIN</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">0%</div>
+                    <div class="metric-label">EFFICIENCY</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">0</div>
+                    <div class="metric-label">CONNECTIONS</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="manufacturing-stage">
+            <div class="stage-step active">
+                <div class="stage-icon">🏭</div>
+                <div class="stage-label">RAW MATERIALS</div>
+            </div>
+            <div class="stage-step">
+                <div class="stage-icon">📊</div>
+                <div class="stage-label">PLANNING</div>
+            </div>
+            <div class="stage-step">
+                <div class="stage-icon">⚙️</div>
+                <div class="stage-label">PRODUCTION</div>
+            </div>
+            <div class="stage-step">
+                <div class="stage-icon">✅</div>
+                <div class="stage-label">QUALITY</div>
+            </div>
+            <div class="stage-step">
+                <div class="stage-icon">📦</div>
+                <div class="stage-label">PACKAGING</div>
+            </div>
+            <div class="stage-step">
+                <div class="stage-icon">🚚</div>
+                <div class="stage-label">SHIPPING</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const agentDescriptions = {
+            'Raw Materials Agent': {
+                description: 'Manages raw material inventory, procurement, and quality verification. Coordinates with suppliers and ensures optimal stock levels.',
+                protocols: ['A2A', 'MCP'],
+                operations: '120-150',
+                efficiency: '94-98',
+                connections: '3-5'
+            },
+            'Quality Inspection Agent': {
+                description: 'Performs automated quality inspection of incoming materials using computer vision and sensor data. Integrates with blockchain for traceability.',
+                protocols: ['A2A', 'MCP'],
+                operations: '200-250',
+                efficiency: '96-99',
+                connections: '4-6'
+            },
+            'Production Planning Agent': {
+                description: 'Optimizes production schedules using ML algorithms. Considers demand forecasts, resource availability, and maintenance schedules.',
+                protocols: ['A2A', 'MCP'],
+                operations: '80-100',
+                efficiency: '92-96',
+                connections: '6-8'
+            },
+            'Machine Control Agent': {
+                description: 'Controls manufacturing equipment, monitors performance metrics, and ensures precise operation parameters.',
+                protocols: ['A2A'],
+                operations: '300-350',
+                efficiency: '98-99',
+                connections: '5-7'
+            },
+            'Assembly Line Agent': {
+                description: 'Coordinates robotic assembly operations, manages work-in-progress inventory, and optimizes line balance.',
+                protocols: ['A2A', 'MCP'],
+                operations: '250-300',
+                efficiency: '95-98',
+                connections: '4-6'
+            },
+            'Inventory Control Agent': {
+                description: 'Manages finished goods inventory, coordinates with warehousing, and optimizes storage allocation.',
+                protocols: ['A2A', 'MCP'],
+                operations: '150-200',
+                efficiency: '93-97',
+                connections: '5-7'
+            },
+            'Predictive Maintenance Agent': {
+                description: 'Monitors equipment health, predicts maintenance needs, and schedules preventive maintenance.',
+                protocols: ['MCP'],
+                operations: '100-150',
+                efficiency: '91-95',
+                connections: '3-5'
+            },
+            'Quality Control Agent': {
+                description: 'Ensures product quality through automated testing and inspection. Manages quality documentation and compliance.',
+                protocols: ['A2A', 'MCP'],
+                operations: '180-220',
+                efficiency: '97-99',
+                connections: '4-6'
+            },
+            'Packaging Agent': {
+                description: 'Manages packaging operations, ensures proper labeling, and optimizes packaging materials usage.',
+                protocols: ['A2A'],
+                operations: '150-200',
+                efficiency: '94-97',
+                connections: '3-5'
+            },
+            'Shipping Agent': {
+                description: 'Coordinates product shipping, manages carrier relationships, and optimizes delivery routes.',
+                protocols: ['A2A', 'MCP'],
+                operations: '120-150',
+                efficiency: '92-96',
+                connections: '4-6'
+            }
+        };
+
+        const agentDemos = {
+            'Raw Materials Agent': {
+                title: 'Raw Materials Management Agent',
+                description: `This Kotlin-based agent manages raw material inventory and procurement using both A2A and MCP protocols.`,
+                code: `
+@Component
+class RawMaterialsAgent {
+    @Autowired
+    private lateinit var kafkaTemplate: KafkaTemplate<String, String>
+    
+    @Autowired
+    private lateinit var mongoTemplate: MongoTemplate
+
+    @A2AFunction
+    fun checkInventoryLevels(): MaterialStatus {
+        // Monitor inventory levels
+        val materials = mongoTemplate.find(Query(), RawMaterial::class.java)
+        
+        // Publish inventory updates
+        kafkaTemplate.send("inventory-updates", 
+            materials.map { it.toEvent() })
+            
+        return MaterialStatus(materials)
+    }
+
+    @MCPFunction
+    fun requestMaterials(request: MaterialRequest) {
+        // Process material request
+        // Notify suppliers through A2A
+    }
+}`,
+                interactions: [
+                    { from: 'raw-materials', to: 'mongodb', message: 'Store inventory data' },
+                    { from: 'raw-materials', to: 'kafka', message: 'Publish updates' }
+                ]
+            },
+            // Add similar detailed demos for other agents
+        };
+
+        
+function showFlow(fromId, toId) {
+    const from = document.getElementById(fromId);
+    const to = document.getElementById(toId);
+    if (!from || !to) return;
+
+    const fromRect = from.getBoundingClientRect();
+    const toRect = to.getBoundingClientRect();
+
+    const x1 = fromRect.left + fromRect.width / 2;
+    const y1 = fromRect.top + fromRect.height / 2;
+    const x2 = toRect.left + toRect.width / 2;
+    const y2 = toRect.top + toRect.height / 2;
+
+    const length = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+    const angle = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
+
+    const container = document.querySelector('.mesh-container');
+
+    const flowLine = document.createElement('div');
+    flowLine.className = 'message-flow';
+    flowLine.style.width = `${length}px`;
+    flowLine.style.left = `${x1}px`;
+    flowLine.style.top = `${y1}px`;
+    flowLine.style.transform = `rotate(${angle}deg)`;
+    container.appendChild(flowLine);
+
+    animateFlowParticles(flowLine, length);
+}
+
+
+// Initialize agent interactions
+        document.querySelectorAll('.manufacturing-agent').forEach(agent => {
+            agent.addEventListener('mouseenter', function() {
+                const agentName = this.getAttribute('data-name');
+                const info = agentDescriptions[agentName];
+                const panel = document.querySelector('.info-panel');
+                
+                panel.querySelector('.agent-description').textContent = info.description;
+                panel.querySelector('.metric-value').textContent = 
+                    Math.floor(Math.random() * 
+                        (parseInt(info.operations.split('-')[1]) - parseInt(info.operations.split('-')[0])) + 
+                        parseInt(info.operations.split('-')[0]));
+                panel.querySelector('.metric-value:nth-child(1)').textContent = 
+                    (Math.random() * 
+                        (parseInt(info.efficiency.split('-')[1]) - parseInt(info.efficiency.split('-')[0])) + 
+                        parseInt(info.efficiency.split('-')[0])).toFixed(1) + '%';
+                panel.querySelector('.metric-value:nth-child(2)').textContent = 
+                    Math.floor(Math.random() * 
+                        (parseInt(info.connections.split('-')[1]) - parseInt(info.connections.split('-')[0])) + 
+                        parseInt(info.connections.split('-')[0]));
+                
+                panel.classList.add('visible');
+
+                // Create connection effects
+                createConnections(this);
+            });
+
+            agent.addEventListener('mouseleave', function() {
+                document.querySelector('.info-panel').classList.remove('visible');
+                // Remove connection effects
+                removeConnections();
+            });
+
+            // Replaced click listener
+
+document.querySelectorAll('.manufacturing-agent').forEach(agent => {
+    agent.addEventListener('click', function() {
+        const agentName = this.getAttribute('data-name');
+        const demo = agentDemos[agentName];
+
+        document.querySelectorAll('.manufacturing-agent').forEach(a => a.classList.remove('selected'));
+        this.classList.add('selected');
+
+        if (demo) {
+            const demoModal = document.getElementById('agent-demo');
+            const demoContent = document.getElementById('demo-details');
+
+            demoContent.innerHTML = `
+                <h3>${demo.title}</h3>
+                <p>${demo.description}</p>
+                <div class="demo-section">
+                    <h4>Implementation:</h4>
+                    <pre class="demo-code">${demo.code}</pre>
+                </div>
+            `;
+
+            demoModal.classList.add('visible');
+            removeConnections();
+
+            demo.interactions.forEach(interaction => {
+                showFlow(interaction.from, interaction.to);
+            });
+        }
+    });
+});
+
+// END replacement
+// agent.addEventListener('click', function() {
+                const agentName = this.getAttribute('data-name');
+                const demo = agentDemos[agentName];
+                
+                if (demo) {
+                    const demoModal = document.getElementById('agent-demo');
+                    const demoContent = document.getElementById('demo-details');
+                    
+                    demoContent.innerHTML = `
+                        <h3>${demo.title}</h3>
+                        <p>${demo.description}</p>
+                        <div class="demo-section">
+                            <h4>Implementation:</h4>
+                            <pre class="demo-code">${demo.code}</pre>
+                        </div>
+                    `;
+                    
+                    demoModal.classList.add('visible');
+                    
+                    // Show interaction flows
+                    demo.interactions.forEach(interaction => {
+                        showFlow(interaction.from, interaction.to);
+                    });
+                }
+            });
+        });
+
+        // Close demo modal
+        document.querySelector('.demo-close').addEventListener('click', () => {
+            document.getElementById('agent-demo').classList.remove('visible');
+            removeAllFlows();
+        });
+
+        function createConnections(agent) {
+            removeConnections(); // Clear existing connections
+            
+            const targetIds = getTargetConnections(agent.id);
+            if (!targetIds.length) return;
+            
+            const container = document.querySelector('.mesh-container');
+            const agentRect = agent.getBoundingClientRect();
+            
+            targetIds.forEach(targetId => {
+                const target = document.getElementById(targetId);
+                if (!target) return;
+                
+                const targetRect = target.getBoundingClientRect();
+                
+                // Calculate line position and rotation
+                const x1 = agentRect.left + agentRect.width/2;
+                const y1 = agentRect.top + agentRect.height/2;
+                const x2 = targetRect.left + targetRect.width/2;
+                const y2 = targetRect.top + targetRect.height/2;
+                
+                const length = Math.sqrt(Math.pow(x2-x1, 2) + Math.pow(y2-y1, 2));
+                const angle = Math.atan2(y2-y1, x2-x1) * 180/Math.PI;
+                
+                // Create connection line
+                const line = document.createElement('div');
+                line.className = 'connection-line';
+                line.style.width = `${length}px`;
+                line.style.left = `${x1}px`;
+                line.style.top = `${y1}px`;
+                line.style.transform = `rotate(${angle}deg)`;
+                container.appendChild(line);
+                
+                // Create flow line
+                const flow = document.createElement('div');
+                flow.className = 'message-flow';
+                flow.style.width = `${length}px`;
+                flow.style.left = `${x1}px`;
+                flow.style.top = `${y1}px`;
+                flow.style.transform = `rotate(${angle}deg)`;
+                container.appendChild(flow);
+                
+                // Add flow particles
+                animateFlowParticles(flow, length);
+            });
+        }
+
+        function createConnection(source, target, protocol) {
+            const sourceRect = source.getBoundingClientRect();
+            const targetRect = target.getBoundingClientRect();
+            
+            const sourceX = sourceRect.left + sourceRect.width / 2;
+            const sourceY = sourceRect.top + sourceRect.height / 2;
+            const targetX = targetRect.left + targetRect.width / 2;
+            const targetY = targetRect.top + targetRect.height / 2;
+            
+            const length = Math.sqrt(Math.pow(targetX - sourceX, 2) + Math.pow(targetY - sourceY, 2));
+            const angle = Math.atan2(targetY - sourceY, targetX - sourceX) * 180 / Math.PI;
+            
+            const line = document.createElement('div');
+            line.className = 'connection-line';
+            line.style.width = `${length}px`;
+            line.style.left = `${sourceX}px`;
+            line.style.top = `${sourceY}px`;
+            line.style.transform = `rotate(${angle}deg)`;
+            
+            document.body.appendChild(line);
+            return line;
+        }
+
+        function animateDataFlow(connection, protocol) {
+            const particle = document.createElement('div');
+            particle.className = 'flow-particle';
+            document.body.appendChild(particle);
+
+            const startX = parseFloat(connection.style.left);
+            const startY = parseFloat(connection.style.top);
+            const length = parseFloat(connection.style.width);
+            const angle = parseFloat(connection.style.transform.replace('rotate(', '').replace('deg)', ''));
+            
+            const duration = 2000; // 2 seconds for one complete flow
+            const start = performance.now();
+            
+            function animate(currentTime) {
+                const elapsed = currentTime - start;
+                const progress = (elapsed % duration) / duration;
+                
+                const currentX = startX + Math.cos(angle * Math.PI / 180) * (length * progress);
+                const currentY = startY + Math.sin(angle * Math.PI / 180) * (length * progress);
+                
+                particle.style.left = `${currentX - 4}px`;
+                particle.style.top = `${currentY - 4}px`;
+                
+                if (document.body.contains(connection)) {
+                    requestAnimationFrame(animate);
+                } else {
+                    particle.remove();
+                }
+            }
+            
+            requestAnimationFrame(animate);
+        }
+
+        function updateConnections() {
+            // Remove existing connections
+            document.querySelectorAll('.connection-line').forEach(conn => conn.remove());
+            document.querySelectorAll('.flow-particle').forEach(particle => particle.remove());
+            
+            // Create new connections based on current agent positions
+            const agents = document.querySelectorAll('.agent');
+            agents.forEach(source => {
+                agents.forEach(target => {
+                    if (source !== target) {
+                        const protocol = Math.random() < 0.5 ? 'A2A' : 'MCP';
+                        const connection = createConnection(source, target, protocol);
+                        animateDataFlow(connection, protocol);
+                    }
+                });
+            });
+        }
+
+        // Optimization: Track active animations
+        const activeAnimations = new Set();
+        
+        function cleanupAnimations() {
+            activeAnimations.forEach(anim => {
+                if (!document.body.contains(anim.element)) {
+                    anim.element.remove();
+                    activeAnimations.delete(anim);
+                }
+            });
+        }
+
+        // Optimization: Use requestAnimationFrame more efficiently
+        let animationFrame = null;
+        function scheduleAnimationUpdate() {
+            if (animationFrame === null) {
+                animationFrame = requestAnimationFrame(() => {
+                    updateConnections();
+                    cleanupAnimations();
+                    animationFrame = null;
+                });
+            }
+        }
+
+        // Throttle resize events
+        function throttle(func, limit) {
+            let inThrottle;
+            return function() {
+                const args = arguments;
+                const context = this;
+                if (!inThrottle) {
+                    func.apply(context, args);
+                    inThrottle = true;
+                    setTimeout(() => inThrottle = false, limit);
+                }
+            }
+        }
+
+        // Update event listeners with optimizations
+        const throttledUpdate = throttle(scheduleAnimationUpdate, 250);
+        window.addEventListener('resize', throttledUpdate);
+        
+        // Cleanup on page visibility change
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                cleanupAnimations();
+            } else {
+                scheduleAnimationUpdate();
+            }
+        });
+
+        // Initial connection setup
+        setTimeout(updateConnections, 1000);
+
+        function getTargetConnections(agentId) {
+            // Define logical connections between all agents
+            const connections = {
+                'raw-materials': ['quality-inspection', 'inventory-control', 'production-planning'],
+                'quality-inspection': ['production-planning', 'quality-control', 'raw-materials'],
+                'production-planning': ['machine-control', 'assembly-line', 'inventory-control'],
+                'machine-control': ['assembly-line', 'maintenance', 'quality-control'],
+                'assembly-line': ['quality-control', 'inventory-control', 'packaging'],
+                'inventory-control': ['packaging', 'shipping', 'maintenance'],
+                'maintenance': ['machine-control', 'assembly-line', 'inventory-control'],
+                'quality-control': ['packaging', 'shipping', 'assembly-line'],
+                'packaging': ['shipping', 'inventory-control', 'quality-control'],
+                'shipping': ['packaging', 'inventory-control', 'quality-control']
+            };
+            
+            return connections[agentId] || [];
+        }
+
+        function removeConnections() {
+            document.querySelectorAll('.connection-line, .message-flow, .flow-particle').forEach(el => el.remove());
+        }
+
+        function animateFlowParticles(flow, length) {
+            const particle = document.createElement('div');
+            particle.className = 'flow-particle';
+            document.body.appendChild(particle);
+
+            const startX = parseFloat(flow.style.left);
+            const startY = parseFloat(flow.style.top);
+            const angle = parseFloat(flow.style.transform.replace('rotate(', '').replace('deg)', ''));
+            
+            function animate(progress) {
+                const currentX = startX + Math.cos(angle * Math.PI / 180) * (length * progress);
+                const currentY = startY + Math.sin(angle * Math.PI / 180) * (length * progress);
+                
+                particle.style.left = `${currentX - 4}px`;
+                particle.style.top = `${currentY - 4}px`;
+            }
+
+            const duration = 2000;
+            const start = performance.now();
+            
+            function step(currentTime) {
+                const elapsed = currentTime - start;
+                const progress = (elapsed % duration) / duration;
+                
+                animate(progress);
+                
+                if (document.body.contains(flow)) {
+                    requestAnimationFrame(step);
+                } else {
+                    particle.remove();
+                }
+            }
+            
+            requestAnimationFrame(step);
+        }
+
+        // Animate manufacturing stages
+        let currentStage = 0;
+        const stages = document.querySelectorAll('.stage-step');
+        
+        setInterval(() => {
+            stages[currentStage].classList.remove('active');
+            currentStage = (currentStage + 1) % stages.length;
+            stages[currentStage].classList.add('active');
+        }, 3000);
+    </script>
+</body>
+</html>

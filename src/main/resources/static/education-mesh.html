@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Educational AI Hub-and-Spoke Network</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+        }
+        #mesh-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .agent {
+            position: absolute;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .hub-agent {
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(135deg, #6b1b9a, #4a148c);
+            z-index: 2;
+        }
+        .student-agent {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #64b5f6, #1976d2);
+        }
+        .agent:hover {
+            transform: scale(1.1);
+        }
+        .connection {
+            position: absolute;
+            height: 3px;
+            background: rgba(0,0,0,0.1);
+            transform-origin: left center;
+            pointer-events: none;
+            transition: all 0.3s;
+        }
+        .connection.active {
+            background: #6b1b9a;
+            box-shadow: 0 0 15px rgba(107,27,154,0.5);
+        }
+        .knowledge-particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #e1bee7;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .info-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            max-width: 300px;
+        }
+        .knowledge-topic {
+            display: inline-block;
+            background: #e1bee7;
+            color: #4a148c;
+            padding: 4px 12px;
+            border-radius: 16px;
+            margin: 4px;
+            font-size: 12px;
+        }
+        .message-bubble {
+            position: absolute;
+            background: white;
+            padding: 10px 15px;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            font-size: 14px;
+            color: #333;
+            z-index: 100;
+            max-width: 200px;
+            text-align: center;
+        }
+        .learning-status {
+            position: absolute;
+            bottom: -20px;
+            font-size: 12px;
+            white-space: nowrap;
+            color: #666;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .learning-active {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div id="mesh-container"></div>
+    <div class="info-panel">
+        <h3>AI Education Hub</h3>
+        <p>Current Knowledge Topics:</p>
+        <div id="knowledge-topics"></div>
+    </div>
+
+    <script>
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
+        const radius = 300; // Radius of the circle on which students are placed
+
+        // Knowledge topics in the central hub
+        const knowledgeTopics = [
+            'Machine Learning Fundamentals',
+            'Neural Networks',
+            'Natural Language Processing',
+            'Computer Vision',
+            'Reinforcement Learning',
+            'Ethics in AI'
+        ];
+
+        // Create the hub agent (central AI)
+        const hubAgent = {
+            id: 'hub',
+            type: 'hub',
+            name: 'AI Education Hub',
+            x: centerX,
+            y: centerY,
+            knowledge: knowledgeTopics,
+            learningCapacity: 100
+        };
+
+        // Create student agents in a circle around the hub
+        const numStudents = 6;
+        const studentAgents = Array.from({ length: numStudents }, (_, i) => {
+            const angle = (i * 2 * Math.PI) / numStudents;
+            return {
+                id: `student-${i + 1}`,
+                type: 'student',
+                name: `AI Student ${i + 1}`,
+                x: centerX + radius * Math.cos(angle),
+                y: centerY + radius * Math.sin(angle),
+                knowledge: [],
+                learningProgress: 0,
+                currentTopic: null
+            };
+        });
+
+        // Create all agents in the mesh
+        function createAgent(agent) {
+            const agentElement = document.createElement('div');
+            agentElement.className = `agent ${agent.type}-agent`;
+            agentElement.id = agent.id;
+            agentElement.style.left = `${agent.x - (agent.type === 'hub' ? 100 : 60)}px`;
+            agentElement.style.top = `${agent.y - (agent.type === 'hub' ? 100 : 60)}px`;
+            
+            let content = `
+                <strong>${agent.name}</strong>
+                ${agent.type === 'student' ? 
+                    `<div class="learning-status">Ready to learn</div>` : 
+                    `<div style="font-size: 12px; margin-top: 8px;">Core Knowledge Center</div>`}
+            `;
+            
+            agentElement.innerHTML = content;
+            agentElement.onclick = () => agent.type === 'student' ? initiateStudentLearning(agent) : showHubInfo(agent);
+            document.getElementById('mesh-container').appendChild(agentElement);
+        }
+
+        // Create connections between hub and students
+        function createConnections() {
+            studentAgents.forEach(student => {
+                const connection = document.createElement('div');
+                connection.className = 'connection';
+                connection.id = `connection-${student.id}`;
+                
+                const dx = student.x - hubAgent.x;
+                const dy = student.y - hubAgent.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                
+                connection.style.width = `${distance}px`;
+                connection.style.left = `${hubAgent.x}px`;
+                connection.style.top = `${hubAgent.y}px`;
+                connection.style.transform = `rotate(${angle}deg)`;
+                
+                document.getElementById('mesh-container').appendChild(connection);
+            });
+        }
+
+        // Display knowledge topics in the info panel
+        function displayKnowledgeTopics() {
+            const topicsContainer = document.getElementById('knowledge-topics');
+            topicsContainer.innerHTML = knowledgeTopics.map(topic => 
+                `<div class="knowledge-topic">${topic}</div>`
+            ).join('');
+        }
+
+        // Initiate learning process for a student
+        function initiateStudentLearning(student) {
+            if (student.currentTopic) return; // Already learning
+
+            const availableTopics = knowledgeTopics.filter(topic => !student.knowledge.includes(topic));
+            if (availableTopics.length === 0) {
+                showMessage(student, 'All topics mastered!');
+                return;
+            }
+
+            const topic = availableTopics[Math.floor(Math.random() * availableTopics.length)];
+            student.currentTopic = topic;
+            
+            const studentElement = document.getElementById(student.id);
+            studentElement.classList.add('learning-active');
+            
+            const connection = document.getElementById(`connection-${student.id}`);
+            connection.classList.add('active');
+            
+            showMessage(student, `Learning: ${topic}`);
+            animateKnowledgeTransfer(hubAgent, student, topic);
+
+            // Simulate learning process
+            setTimeout(() => {
+                student.knowledge.push(topic);
+                student.currentTopic = null;
+                studentElement.classList.remove('learning-active');
+                connection.classList.remove('active');
+                showMessage(student, `Mastered: ${topic}`);
+                
+                // Update learning status
+                const status = studentElement.querySelector('.learning-status');
+                status.textContent = `Knowledge: ${student.knowledge.length}/${knowledgeTopics.length}`;
+            }, 5000);
+        }
+
+        // Animate knowledge transfer from hub to student
+        function animateKnowledgeTransfer(from, to, topic) {
+            const particle = document.createElement('div');
+            particle.className = 'knowledge-particle';
+            particle.style.left = `${from.x}px`;
+            particle.style.top = `${from.y}px`;
+            document.getElementById('mesh-container').appendChild(particle);
+
+            particle.style.transition = 'all 2s ease-in-out';
+            setTimeout(() => {
+                particle.style.left = `${to.x}px`;
+                particle.style.top = `${to.y}px`;
+            }, 50);
+
+            setTimeout(() => particle.remove(), 2000);
+        }
+
+        // Show message bubble
+        function showMessage(agent, text) {
+            const message = document.createElement('div');
+            message.className = 'message-bubble';
+            message.style.left = `${agent.x - 100}px`;
+            message.style.top = `${agent.y - 100}px`;
+            message.textContent = text;
+            
+            document.getElementById('mesh-container').appendChild(message);
+            setTimeout(() => message.remove(), 2000);
+        }
+
+        // Show hub information
+        function showHubInfo(hub) {
+            const studentsLearning = studentAgents.filter(s => s.currentTopic).length;
+            showMessage(hub, `Active students: ${studentsLearning}
+                Total knowledge topics: ${knowledgeTopics.length}`);
+        }
+
+        // Initialize the visualization
+        createAgent(hubAgent);
+        studentAgents.forEach(createAgent);
+        createConnections();
+        displayKnowledgeTopics();
+
+        // Periodically trigger random student learning
+        setInterval(() => {
+            const randomStudent = studentAgents[Math.floor(Math.random() * studentAgents.length)];
+            if (!randomStudent.currentTopic) {
+                initiateStudentLearning(randomStudent);
+            }
+        }, 8000);
+    </script>
+</body>
+</html>
