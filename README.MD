@@ -1,81 +1,178 @@
-# AgenticMesh
-
-AgenticMesh is a powerful JVM-based ecosystem for implementing agent-based distributed systems using standardized protocols like A2A (Agent-to-Agent) and MCP (Model Context Protocol). It provides a robust framework for building intelligent, autonomous agent networks that can communicate and collaborate effectively.
+# AgenticMesh - JVM Agent Mesh Framework
 
 ## Overview
 
-AgenticMesh enables the development of sophisticated agent-based systems where multiple autonomous agents work together to solve complex problems. Built primarily for JVM languages (Java, Kotlin, Scala, Groovy), it emphasizes:
+AgenticMesh is a powerful JVM-based framework for building distributed agent-based systems. It provides implementations of various mesh patterns and protocols, enabling the creation of flexible and scalable agent networks.
 
-- **Protocol-First Design**: Built around A2A and MCP protocols for standardized agent communication
-- **Multi-Agent Collaboration**: Support for complex agent interaction patterns and behaviors
-- **JVM Language Support**: First-class support for multiple JVM languages
-- **Flexible Architecture**: Implementation of various mesh patterns for different use cases
-- **Intelligent Agents**: Built-in support for AI/ML model integration through MCP
+## Features
 
-## Key Features
-
-- **A2A Protocol Integration**: Native support for Agent-to-Agent communication protocol
-- **MCP Protocol Support**: Built-in capabilities for Model Context Protocol integration
-- **Pattern Templates**: Ready-to-use implementations of common agent mesh patterns
-- **Language Agnostic**: Core functionality accessible from any JVM language
-- **Scalable Architecture**: Designed for distributed and cloud-native deployments
-
-## Supported Patterns
-
-AgenticMesh provides implementations for several key architectural patterns:
-
-1. **Pipeline Pattern**: Sequential agent processing chains
-2. **Hub-and-Spoke**: Centralized coordination with specialized agents
-3. **Decentralized Mesh**: Peer-to-peer agent communication
-4. **Event-Driven**: Reactive agent behaviors
-5. **Blackboard Pattern**: Shared state and collaborative problem-solving
+- Multiple mesh patterns (Hub-and-Spoke, Pipeline, P2P)
+- Protocol support (A2A, MCP)
+- Built-in security features
+- Event system
+- Metrics collection
+- State persistence
+- Configuration management
 
 ## Getting Started
 
 ### Prerequisites
 - JDK 11 or higher
-- Maven or Gradle
-- Basic understanding of agent-based systems
+- Maven 3.6+
 
 ### Installation
 
+Add the dependency to your pom.xml:
 ```xml
 <dependency>
-    <groupId>org.agenticmesh</groupId>
-    <artifactId>agenticmesh-core</artifactId>
-    <version>1.0.0</version>
+    <groupId>vishalmysore</groupId>
+    <artifactId>agenticmesh</artifactId>
+    <version>1.0-SNAPSHOT</version>
 </dependency>
 ```
 
 ### Basic Usage
 
-```java
-// Initialize an agent mesh
-AgenticMesh mesh = AgenticMesh.create()
-    .withProtocol(A2AProtocol.getInstance())
-    .withProtocol(MCPProtocol.getInstance())
-    .build();
+Here's a simple example creating a hub-and-spoke mesh:
 
-// Create and register an agent
-Agent agent = mesh.createAgent("ProcessingAgent")
-    .withCapability(MCPCapability.class)
-    .withHandler(message -> {
-        // Agent logic here
-    })
-    .register();
+```java
+// Create the mesh
+HubMesh mesh = new HubMesh("my-mesh");
+
+// Create agents
+A2AAgent hubAgent = new A2AAgent("hub", "coordinator");
+A2AAgent spokeAgent1 = new A2AAgent("spoke1", "worker");
+A2AAgent spokeAgent2 = new A2AAgent("spoke2", "worker");
+
+// Add agents to mesh
+mesh.addAgent(hubAgent);  // First agent becomes hub
+mesh.addAgent(spokeAgent1);
+mesh.addAgent(spokeAgent2);
+
+// Initialize and start
+mesh.initialize();
+mesh.start();
+
+// Send messages
+Message message = new Message(
+    "msg1",
+    hubAgent.getId(),
+    spokeAgent1.getId(),
+    "A2A",
+    "work-item",
+    Message.MessageType.COMMAND
+);
+mesh.routeMessage(message);
 ```
 
-## Documentation
+## Mesh Patterns
 
-For detailed documentation and examples, please visit:
-- [Pattern Examples](examples/)
-- [API Documentation](docs/api)
-- [Protocol Specifications](docs/protocols)
+### Hub-and-Spoke Pattern
+- Central hub agent coordinates with peripheral agents
+- Good for centralized control and monitoring
+- Example: IoT sensor networks
+
+### Pipeline Pattern
+- Agents process data in sequence
+- Good for workflow automation
+- Example: Manufacturing processes
+
+### Peer-to-Peer Pattern
+- Agents communicate directly
+- Good for distributed processing
+- Example: Distributed computation
+
+## Security
+
+AgenticMesh provides built-in security features:
+
+```java
+SecurityManager security = SecurityManager.getInstance();
+
+// Register agents
+security.registerAgent(agentId, publicKey);
+
+// Manage permissions
+security.grantPermission(agentId, "read.data");
+security.grantPermission(agentId, "write.data");
+
+// Encrypt/decrypt messages
+byte[] encrypted = security.encryptMessage(senderId, receiverId, data);
+byte[] decrypted = security.decryptMessage(receiverId, encrypted);
+
+// Sign/verify data
+byte[] signature = security.sign(data);
+boolean isValid = security.verify(data, signature);
+```
+
+## Event System
+
+The event system enables asynchronous communication:
+
+```java
+EventBus eventBus = EventBus.getInstance();
+
+// Subscribe to events
+eventBus.subscribe(subscriberId, event -> {
+    System.out.println("Received event: " + event.getType());
+});
+
+// Publish events
+eventBus.publish(new Event("data.ready", sourceId, data, Event.EventPriority.HIGH));
+```
+
+## Metrics
+
+Track system performance:
+
+```java
+MetricsCollector metrics = MetricsCollector.getInstance();
+
+// Record metrics
+metrics.incrementCounter("messages.processed");
+metrics.setGauge("agents.active", activeCount);
+metrics.updateAverage("response.time", duration);
+
+// Get metrics
+Map<String, Long> counters = metrics.getCounters();
+Map<String, Long> gauges = metrics.getGauges();
+Map<String, Double> averages = metrics.getAverages();
+```
+
+## Best Practices
+
+1. **Error Handling**
+   - Implement proper error handling in agents
+   - Use circuit breakers for fault tolerance
+   - Monitor agent health
+
+2. **Security**
+   - Always use encryption for sensitive data
+   - Implement proper permission management
+   - Regularly rotate encryption keys
+
+3. **Performance**
+   - Monitor message queue sizes
+   - Balance agent workloads
+   - Use appropriate mesh patterns
+
+4. **Testing**
+   - Unit test agent behaviors
+   - Integration test mesh patterns
+   - Load test with realistic scenarios
 
 ## Examples
 
-Check out our example implementations in the [examples](examples/) directory:
-- Hub-and-Spoke pattern implementation
-- Pipeline processing examples
-- Event-driven agent systems
+Check out the examples package for complete implementations:
+- IoT Sensor Network
+- Manufacturing Pipeline
+- Distributed Computing Network
+
+## Contributing
+
+We welcome contributions! Please see CONTRIBUTING.md for guidelines.
+
+## License
+
+This project is licensed under the MIT License - see LICENSE file for details.
 
