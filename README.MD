@@ -2,8 +2,8 @@
 
 ## Overview
 
-AgenticMesh is a powerful JVM-based framework for building distributed agent-based systems. It provides implementations of various mesh patterns and protocols, enabling the creation of flexible and scalable agent networks.
-
+AgenticMesh is a powerful JVM-based framework for building distributed agent-based systems. It provides implementations of various mesh patterns and protocols, enabling the creation of flexible and scalable agent networks.  
+An agentic mesh is a distributed system where autonomous software agents collaborate to achieve complex tasks. These agents, which can be implemented in different languages, work together through standardized protocols, creating a flexible and scalable network. Think of it as a well-coordinated team where each member specializes in different tasks but works towards common goals. 
 ## Features
 
 - Multiple mesh patterns (Hub-and-Spoke, Pipeline, P2P)
