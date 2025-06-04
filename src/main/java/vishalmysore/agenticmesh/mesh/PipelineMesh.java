@@ -1,6 +1,6 @@
 package vishalmysore.agenticmesh.mesh;
 
-import vishalmysore.agenticmesh.core.Agent;
+import vishalmysore.agenticmesh.core.MeshParticipantAgent;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.Map;
  */
 public class PipelineMesh implements Mesh {
     private final String id;
-    private final Map<String, Agent> agents;
+    private final Map<String, MeshParticipantAgent> agents;
     private MeshState state;
     private List<String> pipelineOrder;
 
@@ -33,7 +33,7 @@ public class PipelineMesh implements Mesh {
     }
 
     @Override
-    public void addAgent(Agent agent) {
+    public void addAgent(MeshParticipantAgent agent) {
         agents.put(agent.getId(), agent);
         pipelineOrder.add(agent.getId());
         state.incrementAgentCount();
@@ -48,8 +48,8 @@ public class PipelineMesh implements Mesh {
     }
 
     @Override
-    public List<Agent> getAgents() {
-        List<Agent> orderedAgents = new ArrayList<>();
+    public List<MeshParticipantAgent> getAgents() {
+        List<MeshParticipantAgent> orderedAgents = new ArrayList<>();
         for (String agentId : pipelineOrder) {
             orderedAgents.add(agents.get(agentId));
         }
@@ -59,7 +59,7 @@ public class PipelineMesh implements Mesh {
     @Override
     public void initialize() {
         state.setStatus(MeshState.Status.INITIALIZING);
-        for (Agent agent : agents.values()) {
+        for (MeshParticipantAgent agent : agents.values()) {
             agent.initialize();
         }
         state.setStatus(MeshState.Status.INITIALIZED);
@@ -74,7 +74,7 @@ public class PipelineMesh implements Mesh {
     @Override
     public void stop() {
         state.setStatus(MeshState.Status.STOPPING);
-        for (Agent agent : agents.values()) {
+        for (MeshParticipantAgent agent : agents.values()) {
             agent.shutdown();
         }
         state.setStatus(MeshState.Status.STOPPED);
@@ -98,7 +98,7 @@ public class PipelineMesh implements Mesh {
     /**
      * Gets the next agent in the pipeline
      */
-    public Agent getNextAgent(String currentAgentId) {
+    public MeshParticipantAgent getNextAgent(String currentAgentId) {
         int currentIndex = pipelineOrder.indexOf(currentAgentId);
         if (currentIndex < 0 || currentIndex >= pipelineOrder.size() - 1) {
             return null;

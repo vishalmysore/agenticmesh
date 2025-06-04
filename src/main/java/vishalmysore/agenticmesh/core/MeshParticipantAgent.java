@@ -3,7 +3,7 @@ package vishalmysore.agenticmesh.core;
 /**
  * Core interface for all agents in the AgenticMesh ecosystem
  */
-public interface Agent {
+public interface MeshParticipantAgent {
     /**
      * Gets the unique identifier for this agent
      */

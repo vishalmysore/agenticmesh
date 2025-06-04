@@ -1,6 +1,6 @@
 package vishalmysore.agenticmesh.examples;
 
-import vishalmysore.agenticmesh.agents.A2AAgent;
+import vishalmysore.agenticmesh.agents.MeshA2AAgent;
 import vishalmysore.agenticmesh.core.Message;
 import vishalmysore.agenticmesh.mesh.HubMesh;
 import vishalmysore.agenticmesh.security.SecurityManager;
@@ -18,7 +18,7 @@ public class IoTSensorNetworkExample {
         HubMesh sensorNetwork = new HubMesh("iot-sensor-network");
 
         // Create gateway agent (hub)
-        A2AAgent gatewayAgent = new A2AAgent("gateway", "iot-gateway") {
+        MeshA2AAgent gatewayAgent = new MeshA2AAgent("gateway", "iot-gateway") {
             @Override
             protected void handleCommand(Message message) {
                 System.out.println("Gateway received command: " + message.getPayload());
@@ -27,7 +27,7 @@ public class IoTSensorNetworkExample {
         };
 
         // Create sensor agents (spokes)
-        A2AAgent temperatureSensor = new A2AAgent("temp-sensor", "temperature") {
+        MeshA2AAgent temperatureSensor = new MeshA2AAgent("temp-sensor", "temperature") {
             @Override
             protected void handleCommand(Message message) {
                 // Simulate temperature reading
@@ -54,7 +54,7 @@ public class IoTSensorNetworkExample {
             }
         };
 
-        A2AAgent humiditySensor = new A2AAgent("humidity-sensor", "humidity") {
+        MeshA2AAgent humiditySensor = new MeshA2AAgent("humidity-sensor", "humidity") {
             @Override
             protected void handleCommand(Message message) {
                 // Simulate humidity reading

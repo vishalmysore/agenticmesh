@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import vishalmysore.agenticmesh.core.Agent;
+import vishalmysore.agenticmesh.core.MeshParticipantAgent;
 import vishalmysore.agenticmesh.core.AgentState;
 import vishalmysore.agenticmesh.core.Message;
 
@@ -16,13 +16,13 @@ public class HubMeshTest {
     private HubMesh hubMesh;
     
     @Mock
-    private Agent mockHubAgent;
+    private MeshParticipantAgent mockHubAgent;
     
     @Mock
-    private Agent mockSpokeAgent1;
+    private MeshParticipantAgent mockSpokeAgent1;
     
     @Mock
-    private Agent mockSpokeAgent2;
+    private MeshParticipantAgent mockSpokeAgent2;
 
     @BeforeEach
     void setUp() {

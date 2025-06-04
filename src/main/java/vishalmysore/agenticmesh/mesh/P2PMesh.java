@@ -1,13 +1,12 @@
 package vishalmysore.agenticmesh.mesh;
 
-import vishalmysore.agenticmesh.core.Agent;
+import vishalmysore.agenticmesh.core.MeshParticipantAgent;
 import vishalmysore.agenticmesh.core.Message;
 import vishalmysore.agenticmesh.events.Event;
 import vishalmysore.agenticmesh.events.EventBus;
 
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -15,7 +14,7 @@ import java.util.stream.Collectors;
  */
 public class P2PMesh implements Mesh {
     private final String id;
-    private final Map<String, Agent> agents;
+    private final Map<String, MeshParticipantAgent> agents;
     private final Map<String, Set<String>> connections;
     private final MeshState state;
     private final ExecutorService executorService;
@@ -45,7 +44,7 @@ public class P2PMesh implements Mesh {
     }
 
     @Override
-    public void addAgent(Agent agent) {
+    public void addAgent(MeshParticipantAgent agent) {
         agents.put(agent.getId(), agent);
         connections.putIfAbsent(agent.getId(), ConcurrentHashMap.newKeySet());
         state.incrementAgentCount();
@@ -62,14 +61,14 @@ public class P2PMesh implements Mesh {
     }
 
     @Override
-    public List<Agent> getAgents() {
+    public List<MeshParticipantAgent> getAgents() {
         return new ArrayList<>(agents.values());
     }
 
     @Override
     public void initialize() {
         state.setStatus(MeshState.Status.INITIALIZING);
-        for (Agent agent : agents.values()) {
+        for (MeshParticipantAgent agent : agents.values()) {
             agent.initialize();
         }
         startNetworkMonitoring();
@@ -216,7 +215,7 @@ public class P2PMesh implements Mesh {
                 Map.of("messageId", message.getId()), Event.EventPriority.MEDIUM));
         } else {
             // Route to specific agent
-            Agent targetAgent = agents.get(message.getReceiverId());
+            MeshParticipantAgent targetAgent = agents.get(message.getReceiverId());
             if (targetAgent != null) {
                 sendToAgent(targetAgent, message);
                 // Notify event bus of direct message
@@ -236,7 +235,7 @@ public class P2PMesh implements Mesh {
             );
     }
 
-    private void sendToAgent(Agent agent, Message message) {
+    private void sendToAgent(MeshParticipantAgent agent, Message message) {
         try {
             agent.processMessage(message);
             String key = message.getSenderId() + "-" + agent.getId();
@@ -287,7 +286,7 @@ public class P2PMesh implements Mesh {
             scheduledExecutor.shutdownNow();
             Thread.currentThread().interrupt();
         }
-        agents.values().forEach(Agent::shutdown);
+        agents.values().forEach(MeshParticipantAgent::shutdown);
         state.setStatus(MeshState.Status.STOPPED);
     }
 

@@ -1,6 +1,6 @@
 package vishalmysore.agenticmesh.mesh;
 
-import vishalmysore.agenticmesh.core.Agent;
+import vishalmysore.agenticmesh.core.MeshParticipantAgent;
 import vishalmysore.agenticmesh.core.AgentState;
 import vishalmysore.agenticmesh.core.Message;
 import java.util.*;
@@ -13,8 +13,8 @@ import java.util.stream.Collectors;
  */
 public class HubMesh implements Mesh {
     private final String id;
-    private final Map<String, Agent> agents;
-    private Agent hubAgent;
+    private final Map<String, MeshParticipantAgent> agents;
+    private MeshParticipantAgent hubAgent;
     private MeshState state;
     private final ExecutorService executorService;
     private final ScheduledExecutorService scheduledExecutor;
@@ -52,7 +52,7 @@ public class HubMesh implements Mesh {
     }
 
     @Override
-    public void addAgent(Agent agent) {
+    public void addAgent(MeshParticipantAgent agent) {
         if (hubAgent == null) {
             hubAgent = agent; // First agent becomes the hub
         }
@@ -73,7 +73,7 @@ public class HubMesh implements Mesh {
     }
 
     @Override
-    public List<Agent> getAgents() {
+    public List<MeshParticipantAgent> getAgents() {
         return new ArrayList<>(agents.values());
     }
 
@@ -84,7 +84,7 @@ public class HubMesh implements Mesh {
         }
         
         state.setStatus(MeshState.Status.INITIALIZING);
-        for (Agent agent : agents.values()) {
+        for (MeshParticipantAgent agent : agents.values()) {
             agent.initialize();
         }
         state.setStatus(MeshState.Status.INITIALIZED);
@@ -128,7 +128,7 @@ public class HubMesh implements Mesh {
     }
 
     private void checkAgentHealth() {
-        for (Agent agent : agents.values()) {
+        for (MeshParticipantAgent agent : agents.values()) {
             AgentState agentState = agent.getState();
             if (agentState.getStatus() == AgentState.Status.ACTIVE) {
                 activeAgents.add(agent.getId());
@@ -154,7 +154,7 @@ public class HubMesh implements Mesh {
             broadcastToSpokes(message);
         } else {
             // Route to specific agent
-            Agent targetAgent = agents.get(message.getReceiverId());
+            MeshParticipantAgent targetAgent = agents.get(message.getReceiverId());
             if (targetAgent != null) {
                 sendToAgent(targetAgent, message);
             }
@@ -167,7 +167,7 @@ public class HubMesh implements Mesh {
         );
     }
 
-    private void sendToAgent(Agent agent, Message message) {
+    private void sendToAgent(MeshParticipantAgent agent, Message message) {
         try {
             agent.processMessage(message);
             agentLoadCount.merge(agent.getId(), 1, Integer::sum);
@@ -181,8 +181,8 @@ public class HubMesh implements Mesh {
     /**
      * Gets the next agent based on the current load balancing strategy
      */
-    public Agent getNextAgent(String currentAgentId) {
-        List<Agent> spokes = getSpokeAgents();
+    public MeshParticipantAgent getNextAgent(String currentAgentId) {
+        List<MeshParticipantAgent> spokes = getSpokeAgents();
         if (spokes.isEmpty()) return null;
 
         switch (loadBalancingStrategy) {
@@ -219,7 +219,7 @@ public class HubMesh implements Mesh {
     /**
      * Finds agents matching the given predicate
      */
-    public List<Agent> findAgents(Predicate<Agent> predicate) {
+    public List<MeshParticipantAgent> findAgents(Predicate<MeshParticipantAgent> predicate) {
         return agents.values().stream()
             .filter(predicate)
             .collect(Collectors.toList());
@@ -267,7 +267,7 @@ public class HubMesh implements Mesh {
         }
 
         // Shutdown agents
-        for (Agent agent : agents.values()) {
+        for (MeshParticipantAgent agent : agents.values()) {
             try {
                 agent.shutdown();
             } catch (Exception e) {
@@ -281,7 +281,7 @@ public class HubMesh implements Mesh {
     /**
      * Gets the hub agent
      */
-    public Agent getHubAgent() {
+    public MeshParticipantAgent getHubAgent() {
         return hubAgent;
     }
 
@@ -289,7 +289,7 @@ public class HubMesh implements Mesh {
      * Sets the hub agent
      */
     public void setHubAgent(String agentId) {
-        Agent newHub = agents.get(agentId);
+        MeshParticipantAgent newHub = agents.get(agentId);
         if (newHub == null) {
             throw new IllegalArgumentException("Agent not found: " + agentId);
         }
@@ -299,8 +299,8 @@ public class HubMesh implements Mesh {
     /**
      * Gets all spoke agents
      */
-    public List<Agent> getSpokeAgents() {
-        List<Agent> spokes = new ArrayList<>(agents.values());
+    public List<MeshParticipantAgent> getSpokeAgents() {
+        List<MeshParticipantAgent> spokes = new ArrayList<>(agents.values());
         spokes.remove(hubAgent);
         return spokes;
     }

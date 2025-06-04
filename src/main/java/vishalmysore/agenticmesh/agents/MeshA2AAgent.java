@@ -1,18 +1,25 @@
 package vishalmysore.agenticmesh.agents;
 
-import vishalmysore.agenticmesh.core.Agent;
+import io.github.vishalmysore.a2a.client.A2AAgent;
+import vishalmysore.agenticmesh.core.MeshParticipantAgent;
 import vishalmysore.agenticmesh.core.AgentState;
 import vishalmysore.agenticmesh.core.Message;
 
 /**
  * Implementation of an agent that uses the A2A (Agent-to-Agent) protocol
  */
-public class A2AAgent implements Agent {
+public class MeshA2AAgent extends A2AAgent implements MeshParticipantAgent {
     private final String id;
     private final String type;
     private AgentState state;
 
-    public A2AAgent(String id, String type) {
+    public MeshA2AAgent(){
+        this.id = "default-id";
+        this.type = "a2a";
+        this.state = new AgentState(id);
+    }
+
+    public MeshA2AAgent(String id, String type) {
         this.id = id;
         this.type = type;
         this.state = new AgentState(id);

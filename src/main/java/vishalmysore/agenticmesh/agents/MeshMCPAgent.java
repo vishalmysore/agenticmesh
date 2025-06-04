@@ -1,19 +1,25 @@
 package vishalmysore.agenticmesh.agents;
 
-import vishalmysore.agenticmesh.core.Agent;
+import io.github.vishalmysore.mcp.client.MCPAgent;
+import vishalmysore.agenticmesh.core.MeshParticipantAgent;
 import vishalmysore.agenticmesh.core.AgentState;
 import vishalmysore.agenticmesh.core.Message;
 
 /**
  * Implementation of an agent that uses the MCP (Model Context Protocol)
  */
-public class MCPAgent implements Agent {
+public class MeshMCPAgent extends MCPAgent implements MeshParticipantAgent {
     private final String id;
     private final String type;
     private AgentState state;
     private Object model; // The ML model or context this agent works with
 
-    public MCPAgent(String id, String type) {
+    public MeshMCPAgent(){
+        this.id = "default-id";
+        this.type = "mcp";
+        this.state = new AgentState(id);
+    }
+    public MeshMCPAgent(String id, String type) {
         this.id = id;
         this.type = type;
         this.state = new AgentState(id);

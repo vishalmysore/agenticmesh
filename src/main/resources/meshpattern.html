@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agentic Mesh Architecture</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Arial', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 1000px;
+            width: 100%;
+        }
+
+        .title {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .title h1 {
+            font-size: 2.5em;
+            margin: 0;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+            margin-top: 10px;
+        }
+
+        .mesh-container {
+            position: relative;
+            height: 400px;
+            margin: 30px 0;
+            overflow: hidden;
+        }
+
+        .agent {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .agent:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .java-agent {
+            background: linear-gradient(45deg, #f89820, #ed8b00);
+            top: 50px;
+            left: 100px;
+        }
+
+        .kotlin-agent {
+            background: linear-gradient(45deg, #7f52ff, #5838d6);
+            top: 50px;
+            right: 100px;
+        }
+
+        .scala-agent {
+            background: linear-gradient(45deg, #dc322f, #b71c1c);
+            bottom: 50px;
+            left: 100px;
+        }
+
+        .groovy-agent {
+            background: linear-gradient(45deg, #4a90e2, #1e6cc7);
+            bottom: 50px;
+            right: 100px;
+        }
+
+        .central-hub {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .connection {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.6), rgba(118, 75, 162, 0.6));
+            transform-origin: left center;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        .connection-1 {
+            top: 110px;
+            left: 180px;
+            width: 200px;
+            transform: rotate(25deg);
+            animation-delay: 0s;
+        }
+
+        .connection-2 {
+            top: 110px;
+            right: 180px;
+            width: 200px;
+            transform: rotate(-25deg);
+            animation-delay: 0.5s;
+        }
+
+        .connection-3 {
+            bottom: 110px;
+            left: 180px;
+            width: 200px;
+            transform: rotate(-25deg);
+            animation-delay: 1s;
+        }
+
+        .connection-4 {
+            bottom: 110px;
+            right: 180px;
+            width: 200px;
+            transform: rotate(25deg);
+            animation-delay: 1.5s;
+        }
+
+        .connection-5 {
+            top: 90px;
+            left: 180px;
+            width: 640px;
+            transform: rotate(0deg);
+            animation-delay: 0.25s;
+        }
+
+        .connection-6 {
+            top: 50%;
+            left: 100px;
+            width: 100px;
+            transform: rotate(90deg);
+            animation-delay: 0.75s;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .feature {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            border-left: 4px solid #667eea;
+        }
+
+        .feature h3 {
+            margin: 0 0 10px 0;
+            color: #667eea;
+        }
+
+        .feature p {
+            margin: 0;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .tech-badges {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .badge.java { background: #f89820; }
+        .badge.kotlin { background: #7f52ff; }
+        .badge.scala { background: #dc322f; }
+        .badge.groovy { background: #4a90e2; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="title">
+            <h1>Agentic Mesh Architecture</h1>
+            <div class="subtitle">Multi-Language Agent Systems with A2A Java</div>
+        </div>
+
+        <div class="mesh-container">
+            <div class="connection connection-1"></div>
+            <div class="connection connection-2"></div>
+            <div class="connection connection-3"></div>
+            <div class="connection connection-4"></div>
+            <div class="connection connection-5"></div>
+            <div class="connection connection-6"></div>
+            
+            <div class="agent java-agent">
+                Java<br>Agent
+            </div>
+            <div class="agent kotlin-agent">
+                Kotlin<br>Agent
+            </div>
+            <div class="agent scala-agent">
+                Scala<br>Agent
+            </div>
+            <div class="agent groovy-agent">
+                Groovy<br>Agent
+            </div>
+            <div class="central-hub">
+                A2A Java<br>Protocol
+            </div>
+        </div>
+
+        <div class="features">
+            <div class="feature">
+                <h3>🔁 Pipeline Pattern</h3>
+                <p>Sequential processing with language-specific strengths</p>
+            </div>
+            <div class="feature">
+                <h3>🕸️ Mesh Network</h3>
+                <p>Peer-to-peer agent communication</p>
+            </div>
+            <div class="feature">
+                <h3>🎛️ Shared State</h3>
+                <p>Blackboard pattern for collaboration</p>
+            </div>
+            <div class="feature">
+                <h3>📣 Event-Driven</h3>
+                <p>Reactive system architecture</p>
+            </div>
+        </div>
+
+        <div class="tech-badges">
+            <div class="badge java">Enterprise Integration</div>
+            <div class="badge kotlin">Async Operations</div>
+            <div class="badge scala">Data Processing</div>
+            <div class="badge groovy">Dynamic Scripts</div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,6 +1,6 @@
 package vishalmysore.agenticmesh.mesh;
 
-import vishalmysore.agenticmesh.core.Agent;
+import vishalmysore.agenticmesh.core.MeshParticipantAgent;
 import java.util.List;
 
 /**
@@ -20,7 +20,7 @@ public interface Mesh {
     /**
      * Adds an agent to the mesh
      */
-    void addAgent(Agent agent);
+    void addAgent(MeshParticipantAgent agent);
     
     /**
      * Removes an agent from the mesh
@@ -30,7 +30,7 @@ public interface Mesh {
     /**
      * Gets all agents in the mesh
      */
-    List<Agent> getAgents();
+    List<MeshParticipantAgent> getAgents();
     
     /**
      * Initializes the mesh pattern
